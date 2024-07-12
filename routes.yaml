@@ -1,0 +1,5 @@
+app_name: acsp-profile-delta-consumer
+group: api
+weight: 100
+routes:
+  1: ^/acsp-profile-delta-consumer/healthcheck
