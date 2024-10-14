@@ -1,5 +1,7 @@
 package uk.gov.companieshouse.acspprofile.consumer.serdes;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
@@ -7,9 +9,6 @@ import org.apache.avro.reflect.ReflectDatumWriter;
 import org.apache.kafka.common.serialization.Serializer;
 import uk.gov.companieshouse.acspprofile.consumer.exception.NonRetryableException;
 import uk.gov.companieshouse.delta.ChsDelta;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 public class ChsDeltaSerialiser implements Serializer<ChsDelta> {
 

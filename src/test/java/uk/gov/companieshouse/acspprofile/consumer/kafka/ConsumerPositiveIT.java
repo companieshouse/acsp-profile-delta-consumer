@@ -1,6 +1,16 @@
 package uk.gov.companieshouse.acspprofile.consumer.kafka;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.ERROR_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.INVALID_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.MAIN_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.RETRY_TOPIC;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
@@ -18,14 +28,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import uk.gov.companieshouse.delta.ChsDelta;
 
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.*;
-
 @SpringBootTest
 class ConsumerPositiveIT extends AbstractKafkaIT {
 
@@ -35,8 +37,6 @@ class ConsumerPositiveIT extends AbstractKafkaIT {
     private KafkaProducer<String, byte[]> testProducer;
     @Autowired
     private TestConsumerAspect testConsumerAspect;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @DynamicPropertySource
     static void props(DynamicPropertyRegistry registry) {
@@ -50,7 +50,7 @@ class ConsumerPositiveIT extends AbstractKafkaIT {
     }
 
     @Test
-    void shouldConsumeACSPProfileDeltaTopicAndProcessTM01Delta() throws Exception {
+    void shouldConsumeAcspProfileDeltaTopicAndProcessTM01Delta() throws Exception {
         // given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Encoder encoder = EncoderFactory.get().directBinaryEncoder(outputStream, null);

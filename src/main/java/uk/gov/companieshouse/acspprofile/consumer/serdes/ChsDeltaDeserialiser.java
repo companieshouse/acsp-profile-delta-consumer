@@ -1,20 +1,19 @@
 package uk.gov.companieshouse.acspprofile.consumer.serdes;
 
+import static uk.gov.companieshouse.acspprofile.consumer.Application.NAMESPACE;
+
+import java.io.IOException;
 import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.kafka.common.serialization.Deserializer;
-import uk.gov.companieshouse.acspprofile.consumer.exception.InvalidPayloadException;
+import uk.gov.companieshouse.acspprofile.consumer.exception.NonRetryableException;
 import uk.gov.companieshouse.acspprofile.consumer.logging.DataMapHolder;
 import uk.gov.companieshouse.delta.ChsDelta;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
-
-import java.io.IOException;
-
-import static uk.gov.companieshouse.acspprofile.consumer.Application.NAMESPACE;
 
 public class ChsDeltaDeserialiser implements Deserializer<ChsDelta> {
 
@@ -29,7 +28,7 @@ public class ChsDeltaDeserialiser implements Deserializer<ChsDelta> {
         } catch (IOException | AvroRuntimeException ex) {
             String payload = new String(data);
             LOGGER.error("Error deserialising message payload: [%s]".formatted(payload), ex, DataMapHolder.getLogMap());
-            throw new InvalidPayloadException("Invalid payload: [%s]".formatted(payload), ex);
+            throw new NonRetryableException("Invalid payload: [%s]".formatted(payload), ex);
         }
     }
 }

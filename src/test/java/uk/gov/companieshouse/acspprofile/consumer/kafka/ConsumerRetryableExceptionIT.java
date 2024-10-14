@@ -1,5 +1,19 @@
 package uk.gov.companieshouse.acspprofile.consumer.kafka;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.ERROR_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.INVALID_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.MAIN_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.RETRY_TOPIC;
+
+import java.io.ByteArrayOutputStream;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
@@ -19,25 +33,13 @@ import org.springframework.test.context.DynamicPropertySource;
 import uk.gov.companieshouse.acspprofile.consumer.exception.RetryableException;
 import uk.gov.companieshouse.delta.ChsDelta;
 
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.*;
-
 @SpringBootTest
 class ConsumerRetryableExceptionIT extends AbstractKafkaIT {
 
     @Autowired
     private KafkaConsumer<String, byte[]> testConsumer;
-
     @Autowired
     private KafkaProducer<String, byte[]> testProducer;
-
     @Autowired
     private TestConsumerAspect testConsumerAspect;
 
@@ -55,14 +57,14 @@ class ConsumerRetryableExceptionIT extends AbstractKafkaIT {
     }
 
     @Test
-    void testRepublishToACSPProfileDeltaErrorTopicThroughRetryTopics() throws Exception {
+    void testRepublishToAcspProfileDeltaErrorTopicThroughRetryTopics() throws Exception {
         // given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Encoder encoder = EncoderFactory.get().directBinaryEncoder(outputStream, null);
         DatumWriter<ChsDelta> writer = new ReflectDatumWriter<>(ChsDelta.class);
         writer.write(new ChsDelta("", 0, "context_id", false), encoder);
 
-        doThrow(new RetryableException("Retryable exception", new Throwable())).when(deltaServiceRouter).route(any());
+        doThrow(RetryableException.class).when(deltaServiceRouter).route(any());
 
         // when
         testProducer.send(new ProducerRecord<>(MAIN_TOPIC, 0, System.currentTimeMillis(),

@@ -1,5 +1,13 @@
 package uk.gov.companieshouse.acspprofile.consumer.kafka;
 
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.ERROR_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.INVALID_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.MAIN_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.RETRY_TOPIC;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -11,12 +19,6 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.*;
 
 @TestConfiguration
 public class TestKafkaConfig {

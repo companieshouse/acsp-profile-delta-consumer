@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.acspprofile.consumer.apiclient;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -12,9 +15,6 @@ import uk.gov.companieshouse.acspprofile.consumer.exception.RetryableException;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class ResponseHandlerTest {
 
@@ -24,20 +24,20 @@ class ResponseHandlerTest {
     private ApiErrorResponseException apiErrorResponseException;
     @Mock
     private URIValidationException uriValidationException;
-    @Mock
-    private IllegalArgumentException illegalArgumentException;
-    @Mock
-    private Throwable throwable;
 
     @ParameterizedTest
     @CsvSource({
+            "401",
+            "403",
+            "404",
+            "405",
             "500",
             "501",
             "502",
             "503",
             "504"
     })
-    void shouldHandleApiErrorResponseByThrowingRetryableExceptionWhen5xxStatusCode(final int httpStatusCode) {
+    void shouldHandleApiErrorResponseByThrowingRetryableExceptionForSpecificStatusCodes(final int httpStatusCode) {
         // given
         when(apiErrorResponseException.getStatusCode()).thenReturn(httpStatusCode);
 
@@ -51,13 +51,9 @@ class ResponseHandlerTest {
     @ParameterizedTest
     @CsvSource({
             "400",
-            "401",
-            "403",
-            "404",
-            "405",
             "409"
     })
-    void shouldHandleApiErrorResponseByThrowingNonRetryableExceptionWhenNot5xxStatusCode(final int httpStatusCode) {
+    void shouldHandleApiErrorResponseByThrowingNonRetryableExceptionFor400And409(final int httpStatusCode) {
         // given
         when(apiErrorResponseException.getStatusCode()).thenReturn(httpStatusCode);
 
