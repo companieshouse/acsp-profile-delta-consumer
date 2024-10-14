@@ -7,6 +7,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.acspprofile.consumer.exception.RetryableException;
+import uk.gov.companieshouse.acspprofile.consumer.service.DeltaServiceRouter;
 import uk.gov.companieshouse.delta.ChsDelta;
 
 @Component
