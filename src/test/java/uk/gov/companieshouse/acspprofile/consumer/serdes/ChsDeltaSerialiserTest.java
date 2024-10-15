@@ -1,5 +1,17 @@
 package uk.gov.companieshouse.acspprofile.consumer.serdes;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
 import org.apache.avro.io.DatumWriter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,14 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.acspprofile.consumer.exception.NonRetryableException;
 import uk.gov.companieshouse.delta.ChsDelta;
-
-import java.io.IOException;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChsDeltaSerialiserTest {
@@ -27,13 +31,14 @@ class ChsDeltaSerialiserTest {
     void testSerialiseChsDelta() {
         // given
         ChsDelta delta = new ChsDelta("{}", 0, "context_id", false);
-        ChsDeltaSerialiser serialiser = new ChsDeltaSerialiser();
+        try (ChsDeltaSerialiser serialiser = new ChsDeltaSerialiser()) {
 
-        // when
-        byte[] actual = serialiser.serialize("topic", delta);
+            // when
+            byte[] actual = serialiser.serialize("topic", delta);
 
-        // then
-        assertThat(actual, is(notNullValue()));
+            // then
+            assertThat(actual, is(notNullValue()));
+        }
     }
 
     @Test

@@ -1,5 +1,18 @@
 package uk.gov.companieshouse.acspprofile.consumer.kafka;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.ERROR_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.INVALID_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.MAIN_TOPIC;
+import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.RETRY_TOPIC;
+
+import java.io.ByteArrayOutputStream;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
@@ -19,26 +32,13 @@ import org.springframework.test.context.DynamicPropertySource;
 import uk.gov.companieshouse.acspprofile.consumer.exception.NonRetryableException;
 import uk.gov.companieshouse.delta.ChsDelta;
 
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.*;
-
 @SpringBootTest
 class ConsumerNonRetryableExceptionIT extends AbstractKafkaIT {
 
     @Autowired
     private KafkaConsumer<String, byte[]> testConsumer;
-
     @Autowired
     private KafkaProducer<String, byte[]> testProducer;
-
     @Autowired
     private TestConsumerAspect testConsumerAspect;
 
@@ -56,7 +56,7 @@ class ConsumerNonRetryableExceptionIT extends AbstractKafkaIT {
     }
 
     @Test
-    void testRepublishToACSPProfileInvalidMessageTopicIfNonRetryableExceptionThrown() throws Exception {
+    void testRepublishToAcspProfileInvalidMessageTopicIfNonRetryableExceptionThrown() throws Exception {
         // given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Encoder encoder = EncoderFactory.get().directBinaryEncoder(outputStream, null);
@@ -79,5 +79,25 @@ class ConsumerNonRetryableExceptionIT extends AbstractKafkaIT {
         assertThat(KafkaUtils.noOfRecordsForTopic(consumerRecords, ERROR_TOPIC)).isZero();
         assertThat(KafkaUtils.noOfRecordsForTopic(consumerRecords, INVALID_TOPIC)).isOne();
         verify(deltaServiceRouter).route(any());
+    }
+
+    @Test
+    void testPublishToAcspProfileInvalidMessageTopicIfInvalidDataDeserialised() throws Exception {
+        // given
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Encoder encoder = EncoderFactory.get().directBinaryEncoder(outputStream, null);
+        DatumWriter<String> writer = new ReflectDatumWriter<>(String.class);
+        writer.write("bad data", encoder);
+
+        // when
+        testProducer.send(new ProducerRecord<>(MAIN_TOPIC, 0, System.currentTimeMillis(),
+                "key", outputStream.toByteArray()));
+
+        // then
+        ConsumerRecords<?, ?> consumerRecords = KafkaTestUtils.getRecords(testConsumer, Duration.ofMillis(10000L), 2);
+        assertThat(KafkaUtils.noOfRecordsForTopic(consumerRecords, MAIN_TOPIC)).isOne();
+        assertThat(KafkaUtils.noOfRecordsForTopic(consumerRecords, RETRY_TOPIC)).isZero();
+        assertThat(KafkaUtils.noOfRecordsForTopic(consumerRecords, ERROR_TOPIC)).isZero();
+        assertThat(KafkaUtils.noOfRecordsForTopic(consumerRecords, INVALID_TOPIC)).isOne();
     }
 }
