@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.GenerateEtagUtil;
 
 @Component
-class EtagGenerator {
+public class EtagGenerator {
 
-    String generateEtag() {
+    public String generateEtag() {
         return GenerateEtagUtil.generateEtag();
     }
 }
