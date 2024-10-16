@@ -30,6 +30,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import uk.gov.companieshouse.acspprofile.consumer.exception.NonRetryableException;
+import uk.gov.companieshouse.acspprofile.consumer.service.DeltaServiceRouter;
 import uk.gov.companieshouse.delta.ChsDelta;
 
 @SpringBootTest

@@ -7,7 +7,6 @@ import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.INVALI
 import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.MAIN_TOPIC;
 import static uk.gov.companieshouse.acspprofile.consumer.kafka.KafkaUtils.RETRY_TOPIC;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
