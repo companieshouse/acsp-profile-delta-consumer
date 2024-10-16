@@ -5,7 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.springframework.kafka.retrytopic.RetryTopicHeaders.DEFAULT_HEADER_ATTEMPTS;
+import static org.springframework.kafka.support.KafkaHeaders.OFFSET;
+import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_PARTITION;
+import static org.springframework.kafka.support.KafkaHeaders.RECEIVED_TOPIC;
 
+import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
 import uk.gov.companieshouse.acspprofile.consumer.exception.NonRetryableException;
 import uk.gov.companieshouse.acspprofile.consumer.exception.RetryableException;
 import uk.gov.companieshouse.delta.ChsDelta;
@@ -69,10 +76,15 @@ class LoggingKafkaListenerAspectTest {
     @ExtendWith(OutputCaptureExtension.class)
     void shouldManageStructuredLogging(CapturedOutput capture) throws Throwable {
         // given
-        Object[] args = new Object[]{message, null, TOPIC, 0, 0L};
+        MessageHeaders headers = new MessageHeaders(
+                Map.of(
+                        RECEIVED_TOPIC, TOPIC,
+                        RECEIVED_PARTITION, 0,
+                        OFFSET, 0L));
         Object expected = "result";
-        when(joinPoint.getArgs()).thenReturn(args);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{message});
         when(message.getPayload()).thenReturn(delta);
+        when(message.getHeaders()).thenReturn(headers);
         when(delta.getContextId()).thenReturn(CONTEXT_ID);
         when(joinPoint.proceed()).thenReturn(expected);
 
@@ -89,10 +101,15 @@ class LoggingKafkaListenerAspectTest {
     @ExtendWith(OutputCaptureExtension.class)
     void shouldManageStructuredLoggingDeleteDelta(CapturedOutput capture) throws Throwable {
         // given
-        Object[] args = new Object[]{message, null, TOPIC, 0, 0L};
+        MessageHeaders headers = new MessageHeaders(
+                Map.of(
+                        RECEIVED_TOPIC, TOPIC,
+                        RECEIVED_PARTITION, 0,
+                        OFFSET, 0L));
         Object expected = "result";
-        when(joinPoint.getArgs()).thenReturn(args);
+        when(joinPoint.getArgs()).thenReturn(new Object[]{message});
         when(message.getPayload()).thenReturn(delta);
+        when(message.getHeaders()).thenReturn(headers);
         when(delta.getContextId()).thenReturn(CONTEXT_ID);
         when(delta.getIsDelete()).thenReturn(true);
         when(joinPoint.proceed()).thenReturn(expected);
@@ -110,9 +127,14 @@ class LoggingKafkaListenerAspectTest {
     @ExtendWith(OutputCaptureExtension.class)
     void shouldLogInfoWhenRetryableException(CapturedOutput capture) throws Throwable {
         // given
-        Object[] args = new Object[]{message, null, TOPIC, 0, 0L};
-        when(joinPoint.getArgs()).thenReturn(args);
+        MessageHeaders headers = new MessageHeaders(
+                Map.of(
+                        RECEIVED_TOPIC, TOPIC,
+                        RECEIVED_PARTITION, 0,
+                        OFFSET, 0L));
+        when(joinPoint.getArgs()).thenReturn(new Object[]{message});
         when(message.getPayload()).thenReturn(delta);
+        when(message.getHeaders()).thenReturn(headers);
         when(delta.getContextId()).thenReturn(CONTEXT_ID);
         when(joinPoint.proceed()).thenThrow(RetryableException.class);
 
@@ -129,9 +151,16 @@ class LoggingKafkaListenerAspectTest {
     @ExtendWith(OutputCaptureExtension.class)
     void shouldLogInfoWhenRetryableExceptionMaxAttempts(CapturedOutput capture) throws Throwable {
         // given
-        Object[] args = new Object[]{message, 5, TOPIC, 0, 0L};
-        when(joinPoint.getArgs()).thenReturn(args);
+        MessageHeaders headers = new MessageHeaders(
+                Map.of(
+                        // attempts header returns a byte array not an integer
+                        DEFAULT_HEADER_ATTEMPTS, ByteBuffer.allocate(4).putInt(5).array(),
+                        RECEIVED_TOPIC, TOPIC,
+                        RECEIVED_PARTITION, 0,
+                        OFFSET, 0L));
+        when(joinPoint.getArgs()).thenReturn(new Object[]{message});
         when(message.getPayload()).thenReturn(delta);
+        when(message.getHeaders()).thenReturn(headers);
         when(delta.getContextId()).thenReturn(CONTEXT_ID);
         when(joinPoint.proceed()).thenThrow(RetryableException.class);
 
@@ -153,9 +182,14 @@ class LoggingKafkaListenerAspectTest {
     @ExtendWith(OutputCaptureExtension.class)
     void shouldLogInfoWhenInvalidPayload(CapturedOutput capture) {
         // given
-        Object[] args = new Object[]{invalidMessage, null, TOPIC, 0, 0L};
-        when(joinPoint.getArgs()).thenReturn(args);
+        MessageHeaders headers = new MessageHeaders(
+                Map.of(
+                        RECEIVED_TOPIC, TOPIC,
+                        RECEIVED_PARTITION, 0,
+                        OFFSET, 0L));
+        when(joinPoint.getArgs()).thenReturn(new Object[]{invalidMessage});
         when(invalidMessage.getPayload()).thenReturn("message payload");
+        when(invalidMessage.getHeaders()).thenReturn(headers);
 
         // when
         Executable actual = () -> aspect.manageStructuredLogging(joinPoint);
