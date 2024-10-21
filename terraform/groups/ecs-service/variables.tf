@@ -71,7 +71,12 @@ variable "service_autoscale_target_value_cpu" {
 }
 variable "service_autoscale_scale_in_cooldown" {
   type        = number
-  description = "Cooldown in seconds for ECS Service scale in"
+  description = "Cooldown in seconds for ECS Service scale in (run fewer tasks)"
+  default     = 300
+}
+variable "service_autoscale_scale_out_cooldown" {
+  type        = number
+  description = "Cooldown in seconds for ECS Service scale out (add more tasks)"
   default     = 300
 }
 variable "service_scaledown_schedule" {
