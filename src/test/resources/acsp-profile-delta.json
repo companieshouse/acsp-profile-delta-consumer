@@ -10,7 +10,7 @@
     "address_line_1": "456 Another Street",
     "address_line_2": "Floor 2",
     "care_of": "Jane Smith",
-    "country": "united-kingdom",
+    "country": "United Kingdom",
     "locality": "Manchester",
     "po_box": "PO Box 123",
     "postal_code": "M1 2AB",
@@ -21,7 +21,7 @@
     "address_line_1": "456 Another Street",
     "address_line_2": "Floor 2",
     "care_of": "Jane Smith",
-    "country": "united-kingdom",
+    "country": "United Kingdom",
     "locality": "Manchester",
     "po_box": "PO Box 123",
     "postal_code": "M1 2AB",
@@ -34,7 +34,7 @@
     "middle_name": "A.",
     "surname": "Doe",
     "nationality": "British",
-    "usual_country_of_residence": "united-kingdom"
+    "usual_country_of_residence": "United Kingdom"
   },
   "email": "john.doe@example.com",
   "aml_details": [
