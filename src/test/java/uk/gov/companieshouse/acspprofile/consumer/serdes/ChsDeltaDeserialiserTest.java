@@ -22,6 +22,8 @@ import uk.gov.companieshouse.delta.ChsDelta;
 
 class ChsDeltaDeserialiserTest {
 
+    private static final String TOPIC = "topic";
+
     @Test
     void testShouldSuccessfullyDeserialiseChsDelta() throws IOException {
         // given
@@ -33,7 +35,7 @@ class ChsDeltaDeserialiserTest {
         try (ChsDeltaDeserialiser deserialiser = new ChsDeltaDeserialiser()) {
 
             // when
-            ChsDelta actual = deserialiser.deserialize("topic", outputStream.toByteArray());
+            ChsDelta actual = deserialiser.deserialize(TOPIC, outputStream.toByteArray());
 
             // then
             assertThat(actual, is(equalTo(delta)));
@@ -50,7 +52,7 @@ class ChsDeltaDeserialiserTest {
         try (ChsDeltaDeserialiser deserialiser = new ChsDeltaDeserialiser()) {
 
             // when
-            Executable actual = () -> deserialiser.deserialize("topic", outputStream.toByteArray());
+            Executable actual = () -> deserialiser.deserialize(TOPIC, outputStream.toByteArray());
 
             // then
             NonRetryableException exception = assertThrows(NonRetryableException.class, actual);
@@ -66,7 +68,7 @@ class ChsDeltaDeserialiserTest {
         try (ChsDeltaDeserialiser deserialiser = new ChsDeltaDeserialiser()) {
 
             // when
-            Executable actual = () -> deserialiser.deserialize("topic", "invalid".getBytes(StandardCharsets.UTF_8));
+            Executable actual = () -> deserialiser.deserialize(TOPIC, "invalid".getBytes(StandardCharsets.UTF_8));
 
             // then
             NonRetryableException exception = assertThrows(NonRetryableException.class, actual);

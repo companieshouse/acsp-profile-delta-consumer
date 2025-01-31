@@ -23,6 +23,8 @@ import uk.gov.companieshouse.delta.ChsDelta;
 @ExtendWith(MockitoExtension.class)
 class InvalidMessageRouterTest {
 
+    private static final String INVALID = "invalid";
+
     private InvalidMessageRouter invalidMessageRouter;
 
     @Mock
@@ -34,7 +36,7 @@ class InvalidMessageRouterTest {
     @BeforeEach
     void setup() {
         invalidMessageRouter = new InvalidMessageRouter();
-        invalidMessageRouter.configure(Map.of("message-flags", flags, "invalid-topic", "invalid"));
+        invalidMessageRouter.configure(Map.of("message-flags", flags, "invalid-topic", INVALID));
     }
 
     @Test
@@ -43,14 +45,14 @@ class InvalidMessageRouterTest {
         ProducerRecord<String, Object> message = new ProducerRecord<>("main", 0, "key", "an invalid message",
                 List.of(new RecordHeader(ORIGINAL_PARTITION, BigInteger.ZERO.toByteArray()),
                         new RecordHeader(ORIGINAL_OFFSET, BigInteger.ONE.toByteArray()),
-                        new RecordHeader(EXCEPTION_MESSAGE, "invalid".getBytes())));
+                        new RecordHeader(EXCEPTION_MESSAGE, INVALID.getBytes())));
 
         // when
         ProducerRecord<String, Object> actual = invalidMessageRouter.onSend(message);
 
         // then
         verify(flags, times(0)).destroy();
-        assertThat(actual).isEqualTo(new ProducerRecord<>("invalid", "key", "an invalid message"));
+        assertThat(actual).isEqualTo(new ProducerRecord<>(INVALID, "key", "an invalid message"));
     }
 
     @Test
