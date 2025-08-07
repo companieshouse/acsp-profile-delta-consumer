@@ -17,22 +17,24 @@
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <spring.boot.version>3.4.2</spring.boot.version>
-    <commons-text.version>1.13.0</commons-text.version>
+    <spring.boot.version>3.5.4</spring.boot.version>
+    <commons-text.version>1.14.0</commons-text.version>
 
-    <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-    <maven-surefire.version>3.5.2</maven-surefire.version>
+    <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+    <maven-surefire.version>3.5.3</maven-surefire.version>
     <maven-surefire-plugin.version>${maven-surefire.version}</maven-surefire-plugin.version>
     <maven-failsafe-plugin.version>${maven-surefire.version}</maven-failsafe-plugin.version>
-    <wiremock.version>3.10.0</wiremock.version>
+    <wiremock.version>3.13.1</wiremock.version>
+    <opentelemetry-instrumentation-bom.version>2.15.0</opentelemetry-instrumentation-bom.version>
+    <commons-lang3.version>3.18.0</commons-lang3.version>
 
     <skip.unit.tests>false</skip.unit.tests>
     <skip.integration.tests>false</skip.integration.tests>
 
     <!--companies house-->
-    <structured-logging.version>3.0.25</structured-logging.version>
-    <private-api-sdk-java.version>4.0.264</private-api-sdk-java.version>
-    <kafka-models.version>3.0.8</kafka-models.version>
+    <structured-logging.version>3.0.37</structured-logging.version>
+    <private-api-sdk-java.version>4.0.331</private-api-sdk-java.version>
+    <kafka-models.version>3.0.9</kafka-models.version>
     <api-helper-java.version>3.0.1</api-helper-java.version>
 
     <!--sonar configuration-->
@@ -44,6 +46,13 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>io.opentelemetry.instrumentation</groupId>
+        <artifactId>opentelemetry-instrumentation-bom</artifactId>
+        <version>${opentelemetry-instrumentation-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
@@ -68,6 +77,10 @@
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-logging</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.kafka</groupId>
       <artifactId>spring-kafka</artifactId>
     </dependency>
@@ -87,6 +100,15 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
       <version>${commons-text.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry.instrumentation</groupId>
+      <artifactId>opentelemetry-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
     </dependency>
 
     <dependency>
@@ -130,6 +152,12 @@
       <groupId>uk.gov.companieshouse</groupId>
       <artifactId>api-helper-java</artifactId>
       <version>${api-helper-java.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
