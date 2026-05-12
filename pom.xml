@@ -93,23 +93,11 @@
 
   <dependencies>
     <!--the following transitive dependencies are added specifically to avoid vulnerabilities-->
-    <!-- Pinning version to address CVE-2025-33042 -->
+    <!-- Pinning version to address CVE-2025-33042; pulled in transitively by uk.gov.companieshouse:kafka-models -->
     <dependency>
       <groupId>org.apache.avro</groupId>
       <artifactId>avro</artifactId>
       <version>1.12.1</version>
-    </dependency>
-    <!-- Pinning version to address CVE-2024-29371 -->
-    <dependency>
-      <groupId>org.bitbucket.b_c</groupId>
-      <artifactId>jose4j</artifactId>
-      <version>0.9.6</version>
-    </dependency>
-    <!-- Pinning version to address CVE-2025-67030 -->
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-      <version>4.0.3</version>
     </dependency>
     <!--end transitive dependencies-->
 
