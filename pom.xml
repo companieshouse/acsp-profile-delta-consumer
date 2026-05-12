@@ -17,7 +17,7 @@
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <spring.boot.version>3.5.4</spring.boot.version>
+    <spring.boot.version>4.0.6</spring.boot.version>
     <commons-text.version>1.14.0</commons-text.version>
 
     <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
@@ -25,17 +25,16 @@
     <maven-surefire-plugin.version>${maven-surefire.version}</maven-surefire-plugin.version>
     <maven-failsafe-plugin.version>${maven-surefire.version}</maven-failsafe-plugin.version>
     <wiremock.version>3.13.1</wiremock.version>
-    <opentelemetry-instrumentation-bom.version>2.15.0</opentelemetry-instrumentation-bom.version>
-    <commons-lang3.version>3.18.0</commons-lang3.version>
+    <opentelemetry-instrumentation-bom.version>2.27.0</opentelemetry-instrumentation-bom.version>
 
     <skip.unit.tests>false</skip.unit.tests>
     <skip.integration.tests>false</skip.integration.tests>
 
     <!--companies house-->
-    <structured-logging.version>3.0.37</structured-logging.version>
-    <private-api-sdk-java.version>4.0.331</private-api-sdk-java.version>
-    <kafka-models.version>3.0.9</kafka-models.version>
-    <api-helper-java.version>3.0.1</api-helper-java.version>
+    <structured-logging.version>3.0.57</structured-logging.version>
+    <private-api-sdk-java.version>6.0.10</private-api-sdk-java.version>
+    <kafka-models.version>3.0.31</kafka-models.version>
+    <api-helper-java.version>3.0.4</api-helper-java.version>
 
     <!--sonar configuration-->
     <sonar.coverage.jacoco.xmlReportPaths>
@@ -46,6 +45,35 @@
 
   <dependencyManagement>
     <dependencies>
+      <!--
+        BOM overrides for transitive CVE fixes. Declared before spring-boot-dependencies so that
+        first-wins BOM resolution forces every member of the netty / grpc / jetty-ee10 families
+        to the safe version, instead of pinning artifacts one at a time.
+       -->
+      <!-- Addresses CVE-2026-41417 across all io.netty:netty-* artifacts -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>4.2.13.Final</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Addresses CVE-2026-33186 across all io.grpc:grpc-* artifacts -->
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>1.81.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Addresses CVE-2025-11143, CVE-2026-2332, CVE-2026-5795, CVE-2026-1605 across all org.eclipse.jetty.ee10:* artifacts -->
+      <dependency>
+        <groupId>org.eclipse.jetty.ee10</groupId>
+        <artifactId>jetty-ee10-bom</artifactId>
+        <version>12.0.35</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>io.opentelemetry.instrumentation</groupId>
         <artifactId>opentelemetry-instrumentation-bom</artifactId>
@@ -65,10 +93,23 @@
 
   <dependencies>
     <!--the following transitive dependencies are added specifically to avoid vulnerabilities-->
+    <!-- Pinning version to address CVE-2025-33042 -->
     <dependency>
       <groupId>org.apache.avro</groupId>
       <artifactId>avro</artifactId>
-      <version>1.12.0</version>
+      <version>1.12.1</version>
+    </dependency>
+    <!-- Pinning version to address CVE-2024-29371 -->
+    <dependency>
+      <groupId>org.bitbucket.b_c</groupId>
+      <artifactId>jose4j</artifactId>
+      <version>0.9.6</version>
+    </dependency>
+    <!-- Pinning version to address CVE-2025-67030 -->
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>4.0.3</version>
     </dependency>
     <!--end transitive dependencies-->
 
@@ -84,9 +125,10 @@
       <groupId>org.springframework.kafka</groupId>
       <artifactId>spring-kafka</artifactId>
     </dependency>
+    <!-- spring-boot-starter-aop was removed in Spring Boot 4; pull aspectjweaver directly (spring-aop comes transitively via spring-context) -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-aop</artifactId>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -108,7 +150,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang3.version}</version>
     </dependency>
 
     <dependency>
@@ -165,6 +206,12 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Spring Boot 4 split webmvc test autoconfigure (MockMvc etc.) into its own starter -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>
       <artifactId>wiremock-standalone</artifactId>
@@ -178,12 +225,12 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>kafka</artifactId>
+      <artifactId>testcontainers-kafka</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

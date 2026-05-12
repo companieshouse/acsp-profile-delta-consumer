@@ -149,6 +149,7 @@ class InternalAcspApiMapperTest {
                 .type(Type.CORPORATE_BODY)
                 .notifiedFrom(NOTIFIED_FROM)
                 .registeredOfficeAddress(expectedAddress)
+                .amlDetails(null)
                 .email(EMAIL)
                 .etag(ETAG)
                 .links(new Links()
@@ -174,7 +175,7 @@ class InternalAcspApiMapperTest {
         verify(addressMapper).map(acspAddress);
         verify(addressMapper).map(null);
         verify(soleTraderDetailsMapper).map(null);
-        verify(amlDetailsMapper).map(null);
+        verify(amlDetailsMapper).map(List.of());
         verify(etagGenerator).generateEtag();
     }
 }
