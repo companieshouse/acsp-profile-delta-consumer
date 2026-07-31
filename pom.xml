@@ -303,8 +303,7 @@
               <value>org.sonar.java.jacoco.JUnitListener</value>
             </property>
           </properties>
-          <argLine>-Dfile.encoding=UTF-8</argLine>
-          <argLine>${failsafeArgLine}</argLine>
+          <argLine>-Dfile.encoding=UTF-8 -Dspring.profiles.active=test ${failsafeArgLine}</argLine>
           <classesDirectory>${project.build.outputDirectory}</classesDirectory>
           <skipITs>false</skipITs>
           <excludes>
