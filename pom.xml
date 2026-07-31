@@ -120,13 +120,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-opentelemetry</artifactId>
-<!--      <exclusions>-->
-<!--        &lt;!&ndash; exclusion kotlin-stdlib to fix CVE-2026-53914(9.8) &ndash;&gt;-->
-<!--        <exclusion>-->
-<!--          <groupId>org.jetbrains.kotlin</groupId>-->
-<!--          <artifactId>kotlin-stdlib</artifactId>-->
-<!--        </exclusion>-->
-<!--      </exclusions>-->
     </dependency>
     <dependency>
       <groupId>io.opentelemetry.instrumentation</groupId>
@@ -146,7 +139,7 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
-    <!--companies house-->
+    <!-- companies house -->
     <dependency>
       <groupId>uk.gov.companieshouse</groupId>
       <artifactId>structured-logging</artifactId>
@@ -167,9 +160,9 @@
       <artifactId>api-helper-java</artifactId>
       <version>3.0.4</version>
     </dependency>
-    <!--companies house end-->
+    <!-- companies house end -->
 
-    <!--test-->
+    <!-- test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -202,7 +195,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <!-- test end-->
+  <!-- test end -->
 
   <build>
     <plugins>
