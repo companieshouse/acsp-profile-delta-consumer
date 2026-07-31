@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -40,6 +41,7 @@ import uk.gov.companieshouse.acspprofile.consumer.mapper.EtagGenerator;
 import uk.gov.companieshouse.delta.ChsDelta;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @WireMockTest(httpPort = 8099)
 class ConsumerPositiveIT extends AbstractKafkaIT {
 

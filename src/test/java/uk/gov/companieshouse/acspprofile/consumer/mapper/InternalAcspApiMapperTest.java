@@ -175,7 +175,7 @@ class InternalAcspApiMapperTest {
         verify(addressMapper).map(acspAddress);
         verify(addressMapper).map(null);
         verify(soleTraderDetailsMapper).map(null);
-        verify(amlDetailsMapper).map(List.of());
+        verify(amlDetailsMapper).map(null);
         verify(etagGenerator).generateEtag();
     }
 }
