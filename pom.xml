@@ -70,13 +70,13 @@
       <scope>compile</scope>
     </dependency>
 
-<!--    &lt;!&ndash; override kafka-clients to fix CVE-2026-41115(4.3) - transitive dependency from spring-kafka 4.1.0 &ndash;&gt;-->
-<!--    <dependency>-->
-<!--      <groupId>org.apache.kafka</groupId>-->
-<!--      <artifactId>kafka-clients</artifactId>-->
-<!--      <version>4.3.1</version>-->
-<!--      <scope>compile</scope>-->
-<!--    </dependency>-->
+    <!-- override lz4-java to fix CVE-2026-41115(4.3) - transitive dependency from kafka-clients 4.2.1 -> spring-kafka 4.1.0 -->
+    <dependency>
+      <groupId>at.yawk.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.11.2</version>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- OVERRIDE -->
 
