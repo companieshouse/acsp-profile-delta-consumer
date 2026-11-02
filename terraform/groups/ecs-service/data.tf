@@ -34,17 +34,6 @@ data "aws_iam_role" "ecs_cluster_iam_role" {
   name = "${local.name_prefix}-ecs-task-execution-role"
 }
 
-# retrieve all secrets for this stack using the stack path
-data "aws_ssm_parameters_by_path" "secrets" {
-  path = "/${local.name_prefix}"
-}
-
-# create a list of secrets names to retrieve them in a nicer format and lookup each secret by name
-data "aws_ssm_parameter" "secret" {
-  for_each = toset(data.aws_ssm_parameters_by_path.secrets.names)
-  name     = each.key
-}
-
 # retrieve all global secrets for this env using global path
 data "aws_ssm_parameters_by_path" "global_secrets" {
   path = "/${local.global_prefix}"
